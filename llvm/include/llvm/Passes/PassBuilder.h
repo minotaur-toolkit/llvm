@@ -409,6 +409,11 @@ public:
     PeepholeEPCallbacks.push_back(C);
   }
 
+  void registerVectorCombineCallback(
+      const std::function<void(FunctionPassManager &, OptimizationLevel)> &C) {
+    VectorCombineCallBacks.push_back(C);
+  }
+
   /// Register a callback for a default optimizer pipeline extension
   /// point
   ///
@@ -646,6 +651,8 @@ public:
   void invokePipelineEarlySimplificationEPCallbacks(ModulePassManager &MPM,
                                                     OptimizationLevel Level,
                                                     ThinOrFullLTOPhase Phase);
+  void invokeVectorCombineCallbacks(FunctionPassManager &MPM,
+                                    OptimizationLevel Level);
 
   static bool checkParametrizedPassName(StringRef Name, StringRef PassName) {
     if (!Name.consume_front(PassName))
@@ -749,6 +756,8 @@ private:
   // Extension Point callbacks
   SmallVector<std::function<void(FunctionPassManager &, OptimizationLevel)>, 2>
       PeepholeEPCallbacks;
+  SmallVector<std::function<void(FunctionPassManager &, OptimizationLevel)>, 2>
+      VectorCombineCallBacks;
   SmallVector<std::function<void(LoopPassManager &, OptimizationLevel)>, 2>
       LateLoopOptimizationsEPCallbacks;
   SmallVector<std::function<void(LoopPassManager &, OptimizationLevel)>, 2>
